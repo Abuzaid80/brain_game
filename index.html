@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Brain Quiz - Pengetahuan Alam</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+
+   
+ 
+
+
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <h1><i class="fas fa-brain"></i> Brain Quiz</h1>
+            <p>Uji Pengetahuan Alam Anda</p>
+            <span id="page-info">Created BY Tri Y</span>
+        </header>
+
+        <!-- Welcome Screen -->
+        <div id="welcome-screen" class="screen active">
+            <div class="welcome-content">
+                <div class="welcome-icon">
+                    <i class="fas fa-globe-americas"></i>
+                </div>
+                <h2>Selamat Datang di Brain Quiz!</h2>
+                <p>Jawab 50 pertanyaan tentang pengetahuan alam dan lihat seberapa pintar Anda!</p>
+                
+                <form id="player-form" class="player-form">
+                    <div class="form-group">
+                        <label for="player-name">Nama Anda:</label>
+                        <input type="text" id="player-name" required placeholder="Masukkan nama Anda">
+                    </div>
+                    <div class="form-group">
+                        <label for="player-location">Lokasi:</label>
+                        <div class="location-input-group">
+                            <input type="text" id="player-location" required placeholder="Kota, Provinsi">
+                            <button type="button" id="get-location-btn" class="btn btn-location" title="Deteksi Lokasi Otomatis">
+                                <i class="fas fa-map-marker-alt"></i>
+                            </button>
+                        </div>
+                        <div id="location-status" class="location-status"></div>
+                    </div>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-play"></i> Mulai Quiz
+                    </button>
+                </form>
+            </div>
+            
+            <!-- Mini Leaderboard Section -->
+            <div class="mini-leaderboard-section">
+                <div class="mini-leaderboard-header">
+                    <h3><i class="fas fa-trophy"></i> Top 5 Pemain Terbaik</h3>
+                    <div class="mini-leaderboard-controls">
+                        <button id="sync-leaderboard-btn" class="btn btn-primary btn-sm" title="Sync dengan database global">
+                            <i class="fas fa-sync-alt"></i> Sync
+                        </button>
+                        <button id="view-full-leaderboard-btn" class="btn btn-secondary btn-sm">
+                            <i class="fas fa-chart-bar"></i> Lihat Semua
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="mini-leaderboard-content">
+                    <div class="mini-top-winners">
+                        <div class="mini-winner-card mini-first">
+                            <div class="mini-rank">1</div>
+                            <div class="mini-avatar">
+                                <i class="fas fa-crown"></i>
+                            </div>
+                            <div class="mini-info">
+                                <h4 id="mini-first-name">-</h4>
+                                <p id="mini-first-location">-</p>
+                                <div class="mini-score">
+                                    <span id="mini-first-score">0</span>/50
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mini-winner-card mini-second">
+                            <div class="mini-rank">2</div>
+                            <div class="mini-avatar">
+                                <i class="fas fa-user"></i>
+                            </div>
+                            <div class="mini-info">
+                                <h4 id="mini-second-name">-</h4>
+                                <p id="mini-second-location">-</p>
+                                <div class="mini-score">
+                                    <span id="mini-second-score">0</span>/50
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mini-winner-card mini-third">
+                            <div class="mini-rank">3</div>
+                            <div class="mini-avatar">
+                                <i class="fas fa-user"></i>
+                            </div>
+                            <div class="mini-info">
+                                <h4 id="mini-third-name">-</h4>
+                                <p id="mini-third-location">-</p>
+                                <div class="mini-score">
+                                    <span id="mini-third-score">0</span>/50
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mini-stats">
+                        <div class="mini-stat">
+                            <i class="fas fa-users"></i>
+                            <span id="mini-total-players">0</span> Pemain
+                        </div>
+                        <div class="mini-stat">
+                            <i class="fas fa-star"></i>
+                            <span id="mini-avg-score">0</span> Rata-rata
+                        </div>
+                    </div>
+                    
+                    <div class="mini-leaderboard-table">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Rank</th>
+                                    <th>Nama</th>
+                                    <th>Skor</th>
+                                    <th>Lokasi</th>
+                                </tr>
+                            </thead>
+                            <tbody id="mini-leaderboard-body">
+                                <!-- Mini leaderboard data will be populated here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quiz Screen -->
+        <div id="quiz-screen" class="screen">
+            <div class="quiz-header">
+                <div class="progress-container">
+                    <div class="progress-bar">
+                        <div id="progress-fill" class="progress-fill"></div>
+                    </div>
+                    <span id="progress-text">1/50</span>
+                </div>
+                <div class="score-display">
+                    <i class="fas fa-star"></i>
+                    <span id="current-score">0</span>
+                </div>
+            </div>
+
+            <div class="question-container">
+                <h3 id="question-text">Pertanyaan akan muncul di sini...</h3>
+                <div id="options-container" class="options-container">
+                    <!-- Options will be generated here -->
+                </div>
+            </div>
+
+            <div class="quiz-controls">
+                <button id="next-btn" class="btn btn-secondary" disabled>
+                    <i class="fas fa-arrow-right"></i> Pertanyaan Berikutnya
+                </button>
+            </div>
+        </div>
+
+        <!-- Results Screen -->
+        <div id="results-screen" class="screen">
+            <div class="results-content">
+                <div class="results-header">
+                    <i class="fas fa-trophy"></i>
+                    <h2>Quiz Selesai!</h2>
+                </div>
+                
+                <div class="score-summary">
+                    <div class="score-circle">
+                        <span id="final-score">0</span>
+                        <span class="score-label">dari 50</span>
+                    </div>
+                    <div class="score-details">
+                        <p>Nama: <span id="result-name"></span></p>
+                        <p>Lokasi: <span id="result-location"></span></p>
+                        <p>Persentase: <span id="percentage"></span>%</p>
+                    </div>
+                </div>
+
+                <div class="performance-message">
+                    <p id="performance-text">Pesan performa akan muncul di sini</p>
+                </div>
+
+                <div class="action-buttons">
+                    <button id="play-again-btn" class="btn btn-primary">
+                        <i class="fas fa-redo"></i> Main Lagi
+                    </button>
+                    <button id="view-leaderboard-btn" class="btn btn-secondary">
+                        <i class="fas fa-chart-bar"></i> Lihat Papan Skor
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Leaderboard Screen -->
+        <div id="leaderboard-screen" class="screen">
+            <div class="leaderboard-content">
+                <div class="leaderboard-header">
+                    <h2><i class="fas fa-crown"></i> Papan Skor Global</h2>
+                    <div class="leaderboard-controls">
+                        <button id="refresh-leaderboard-btn" class="btn btn-primary">
+                            <i class="fas fa-sync-alt"></i> Refresh
+                        </button>
+                        <button id="back-to-home-btn" class="btn btn-secondary">
+                            <i class="fas fa-home"></i> Kembali ke Beranda
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Top 3 Winners -->
+                <div class="top-winners">
+                    <div class="winner-card second-place">
+                        <div class="winner-rank">2</div>
+                        <div class="winner-avatar">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <div class="winner-info">
+                            <h4 id="second-name">-</h4>
+                            <p id="second-location">-</p>
+                            <div class="winner-score">
+                                <span id="second-score">0</span>/50
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="winner-card first-place">
+                        <div class="winner-rank">1</div>
+                        <div class="winner-avatar">
+                            <i class="fas fa-crown"></i>
+                        </div>
+                        <div class="winner-info">
+                            <h4 id="first-name">-</h4>
+                            <p id="first-location">-</p>
+                            <div class="winner-score">
+                                <span id="first-score">0</span>/50
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="winner-card third-place">
+                        <div class="winner-rank">3</div>
+                        <div class="winner-avatar">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <div class="winner-info">
+                            <h4 id="third-name">-</h4>
+                            <p id="third-location">-</p>
+                            <div class="winner-score">
+                                <span id="third-score">0</span>/50
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Statistics -->
+                <div class="leaderboard-stats">
+                    <div class="stat-card">
+                        <i class="fas fa-users"></i>
+                        <div class="stat-info">
+                            <h4 id="total-players">0</h4>
+                            <p>Total Pemain</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <i class="fas fa-star"></i>
+                        <div class="stat-info">
+                            <h4 id="avg-score">0</h4>
+                            <p>Rata-rata Skor</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <i class="fas fa-trophy"></i>
+                        <div class="stat-info">
+                            <h4 id="perfect-scores">0</h4>
+                            <p>Skor Sempurna</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Filter Options -->
+                <div class="leaderboard-filters">
+                    <div class="filter-group">
+                        <label for="filter-location">Filter Lokasi:</label>
+                        <select id="filter-location">
+                            <option value="">Semua Lokasi</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label for="filter-date">Filter Tanggal:</label>
+                        <select id="filter-date">
+                            <option value="">Semua Waktu</option>
+                            <option value="today">Hari Ini</option>
+                            <option value="week">Minggu Ini</option>
+                            <option value="month">Bulan Ini</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="leaderboard-table">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Peringkat</th>
+                                <th>Nama</th>
+                                <th>Lokasi</th>
+                                <th>Skor</th>
+                                <th>Persentase</th>
+                                <th>Tanggal</th>
+                                <th>Waktu</th>
+                            </tr>
+                        </thead>
+                        <tbody id="leaderboard-body">
+                            <!-- Leaderboard data will be populated here -->
+                        </tbody>
+                    </table>
+                </div>
+                
+                <!-- Pagination -->
+                <div class="leaderboard-pagination">
+                    <button id="prev-page" class="btn btn-secondary" disabled>
+                        <i class="fas fa-chevron-left"></i> Sebelumnya
+                    </button>
+                    <span id="page-info">Halaman 1 dari 1</span>
+                    <button id="next-page" class="btn btn-secondary" disabled>
+                        Selanjutnya <i class="fas fa-chevron-right"></i>
+                    </button>
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+    
+    <script src="firebase-config.js"></script>
+    <script src="script.js"></script>
+    
+    <!-- Protection Script -->
+    <script>
+        // Disable right click
+        document.addEventListener('contextmenu', function(e) {
+            e.preventDefault();
+            showProtectionMessage('Right click dinonaktifkan untuk melindungi konten.');
+        });
+        
+        // Disable keyboard shortcuts
+        document.addEventListener('keydown', function(e) {
+            // Disable F12
+            if (e.key === 'F12') {
+                e.preventDefault();
+                showProtectionMessage('F12 dinonaktifkan.');
+                return false;
+            }
+            
+            // Disable Ctrl+Shift+I (Developer Tools)
+            if (e.ctrlKey && e.shiftKey && e.key === 'I') {
+                e.preventDefault();
+                showProtectionMessage('Developer Tools dinonaktifkan.');
+                return false;
+            }
+            
+            // Disable Ctrl+Shift+J (Console)
+            if (e.ctrlKey && e.shiftKey && e.key === 'J') {
+                e.preventDefault();
+                showProtectionMessage('Console dinonaktifkan.');
+                return false;
+            }
+            
+            // Disable Ctrl+U (View Source)
+            if (e.ctrlKey && e.key === 'u') {
+                e.preventDefault();
+                showProtectionMessage('View Source dinonaktifkan.');
+                return false;
+            }
+            
+            // Disable Ctrl+Shift+C (Inspect Element)
+            if (e.ctrlKey && e.shiftKey && e.key === 'C') {
+                e.preventDefault();
+                showProtectionMessage('Inspect Element dinonaktifkan.');
+                return false;
+            }
+            
+            // Disable Ctrl+S (Save Page)
+            if (e.ctrlKey && e.key === 's') {
+                e.preventDefault();
+                showProtectionMessage('Save Page dinonaktifkan.');
+                return false;
+            }
+        });
+        
+        // Disable text selection
+        document.addEventListener('selectstart', function(e) {
+            e.preventDefault();
+        });
+        
+        // Disable drag and drop
+        document.addEventListener('dragstart', function(e) {
+            e.preventDefault();
+        });
+        
+        // Disable copy
+        document.addEventListener('copy', function(e) {
+            e.preventDefault();
+            showProtectionMessage('Copy dinonaktifkan.');
+        });
+        
+        // Disable cut
+        document.addEventListener('cut', function(e) {
+            e.preventDefault();
+            showProtectionMessage('Cut dinonaktifkan.');
+        });
+        
+        // Disable paste
+        document.addEventListener('paste', function(e) {
+            e.preventDefault();
+            showProtectionMessage('Paste dinonaktifkan.');
+        });
+        
+        // Function to show protection message
+        function showProtectionMessage(message) {
+            // Create protection message element
+            const protectionMsg = document.createElement('div');
+            protectionMsg.className = 'protection-message';
+            protectionMsg.innerHTML = `
+                <div class="protection-content">
+                    <i class="fas fa-shield-alt"></i>
+                    <span>${message}</span>
+                </div>
+            `;
+            
+            // Add to body
+            document.body.appendChild(protectionMsg);
+            
+            // Remove after 3 seconds
+            setTimeout(() => {
+                if (protectionMsg.parentNode) {
+                    protectionMsg.parentNode.removeChild(protectionMsg);
+                }
+            }, 3000);
+        }
+        
+        // Additional protection: Disable developer tools detection
+        function detectDevTools() {
+            const threshold = 160;
+            const widthThreshold = window.outerWidth - window.innerWidth > threshold;
+            const heightThreshold = window.outerHeight - window.innerHeight > threshold;
+            
+            if (widthThreshold || heightThreshold) {
+                showProtectionMessage('Developer Tools terdeteksi. Akses ditolak.');
+                // Optionally redirect or show warning
+            }
+        }
+        
+        // Check for dev tools periodically
+        setInterval(detectDevTools, 1000);
+        
+        // Disable console.log
+        console.log = function() {};
+        console.info = function() {};
+        console.warn = function() {};
+        console.error = function() {};
+        
+        // Disable alert and confirm
+        window.alert = function() {};
+        window.confirm = function() { return false; };
+        
+        // Disable print
+        window.print = function() {
+            showProtectionMessage('Print dinonaktifkan.');
+        };
+    </script>
+</body>
+</html> 
